@@ -17,7 +17,29 @@
       </div>
       <div id="card-element"></div>
       <div id="card-errors" role="alert"></div>
+
+      <div id="payment-form-spinner" class="d-flex justify-content-center">
+        <div class="spinner-border text-info collapse" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+
       <button id="payment-form-submit" class="btn btn-outline-info shadow-sm mb-5 rounded btn-lg btn-block">注文を確定する</button>
+
+      <div id="content-payment-message collapse">
+        <div class="contents-payment-error collapse">
+          <p>無効な決済リクエストです。</p>
+          <button class="btn btn-outline-warning" id="return-button-error">やり直す</button>
+        </div>
+        <div class="contents-payment-not-yet collapse">
+          <p>クレジットカード、もしくは暗証番号に誤りがあります。</p>
+          <button class="btn btn-outline-warning" id="return-button-not-yet">やり直す</button>
+        </div>
+        <div class="contents-payment-result collapse">
+          <p>お支払いを完了しました。</p>
+          <button class="btn btn-outline-success" id="return-button-normal">トップへ戻る</button>
+        </div>
+      </div>
     </div>
   </div>
 

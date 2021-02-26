@@ -1,3 +1,6 @@
+// ---------------------------
+// 1. elementsインスタンスを用意する
+// ---------------------------
 var stripe = Stripe("pk_test_xxx");
 var elements = stripe.elements();
 
@@ -19,6 +22,9 @@ var order = {
     paymentMethodId : null
 }
 
+// ---------------------------
+// 2. htmlロードにelementインスタンスを生成、マウント
+// ---------------------------
 var style = {
   base: {
     color: "#32325d",
@@ -28,6 +34,9 @@ var style = {
 var card = elements.create("card", { style: style });
 card.mount("#card-element");//formタグ内のdivにマウント
 
+// ---------------------------
+// 3. cardインスタンスの状態変更をハンドリング
+// ---------------------------
 card.on('change', ({error}) => {
   const displayError = document.getElementById('card-errors');
   //エラーがあればcard-errosのdivにエラーメッセージを生成
@@ -37,6 +46,11 @@ card.on('change', ({error}) => {
     displayError.textContent = '';
   }
 });
+
+
+// ---------------------------
+// 4. ボタンが押下された際に決済リクエストの送信、ハンドリング
+// ---------------------------
 
 //注文確定ボタンのDOMを取得する
 const submitButton = document.getElementById("payment-form-submit");
@@ -76,6 +90,30 @@ submitButton.addEventListener("click", function(event){
   });
 });
 
+// ---------------------------
+// 5. 戻るボタンでリセット
+// ---------------------------
+
+//ボタンの要素を取得
+let returnButtonNormal = document.getElementById("return-button-normal");
+let returnButtonError = document.getElementById("return-button-error");
+let returnButtonNotYet = document.getElementById("return-button-not-yet");
+let returnButtonDefault = document.getElementById("return-button-default");
+
+returnButtonNormal.addEventListener("click",reset);
+returnButtonError.addEventListener("click",reset);
+returnButtonNotYet.addEventListener("click",reset);
+returnButtonDefault.addEventListener("click",reset);
+
+//イベントハンドラ。リセットする。
+function reset(event) {
+  hideError();
+  hideMessage();
+  hideNotYetMessage();
+  displayButton();
+  card.mount("#card-element");
+}
+
 function onComplete(response) {
   shutdown();
 
@@ -98,7 +136,7 @@ function onError() {
   if(!document.querySelector(".spinner-border").classList.contains("collapse")) {
     hideSpinner();
   }
-  //エラーメッセージを表示
+  //確定ボタンを消してエラーメッセージを表示
   displayError();
 }
 
@@ -106,6 +144,10 @@ function shutdown() {
   card.unmount();
   hideButton();
 }
+
+// ---------------------------
+// x. 表示関連のスニペット
+// ---------------------------
 
 function hideSpinner() {
   document.querySelector(".spinner-border").classList.add("collapse")

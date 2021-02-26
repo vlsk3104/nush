@@ -42,11 +42,15 @@ card.on('change', ({error}) => {
 const submitButton = document.getElementById("payment-form-submit");
 //ボタンがクリックされたら、アクションを実行
 submitButton.addEventListener("click", function(event){
+  //スピナーを表示する
+  displaySpinner();
+
   stripe
   .createPaymentMethod("card", card) //ここでPromiseが返ってくるので、thenで処理を続ける
   .then(function(result){
     if(result.error) {
       //エラー時の処理
+      onError();
     } else {
       //成功したときの処理。サーバサイドに注文情報を送信する
       //支払いメソッドIDをリクエストデータに詰める
@@ -63,10 +67,12 @@ submitButton.addEventListener("click", function(event){
       })
       .then(function(response){
         //正常終了。
+        onComplete(response);
       });
     }
   })
   .catch(function(){
+    onError();
   });
 });
 
@@ -78,7 +84,7 @@ function onComplete(response) {
   if(response.error) {
     onError();
   } else if (response.paymentIntentStatus === "succeeded") {
-    
+
     //確定ボタンを消して完了メッセージを表示
     displayMessage();
   } else {

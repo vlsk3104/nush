@@ -70,3 +70,76 @@ submitButton.addEventListener("click", function(event){
   });
 });
 
+function onComplete(response) {
+  shutdown();
+
+  //スピナー終了
+  hideSpinner();
+  if(response.error) {
+    onError();
+  } else if (response.paymentIntentStatus === "succeeded") {
+    
+    //確定ボタンを消して完了メッセージを表示
+    displayMessage();
+  } else {
+    displayNotYetMessage();
+  }
+}
+
+function onError() {
+  shutdown();
+
+  if(!document.querySelector(".spinner-border").classList.contains("collapse")) {
+    hideSpinner();
+  }
+  //エラーメッセージを表示
+  displayError();
+}
+
+function shutdown() {
+  card.unmount();
+  hideButton();
+}
+
+function hideSpinner() {
+  document.querySelector(".spinner-border").classList.add("collapse")
+}
+
+function displaySpinner() {
+  document.querySelector(".spinner-border").classList.remove("collapse");
+}
+
+//エラーメッセージ
+function hideError() {
+  document.querySelector(".contents-payment-error").classList.add("collapse");
+}
+
+function displayError() {
+  document.querySelector(".contents-payment-error").classList.remove("collapse");
+}
+
+//成功メッセージ
+function displayMessage() {
+  document.querySelector(".contents-payment-result").classList.remove("collapse");
+}
+
+function hideMessage() {
+  document.querySelector(".contents-payment-result").classList.add("collapse");
+}
+
+function displayNotYetMessage() {
+  document.querySelector(".contents-payment-not-yet").classList.remove("collapse");
+}
+
+function hideNotYetMessage() {
+  document.querySelector(".contents-payment-not-yet").classList.add("collapse");
+}
+
+//注文確定ボタン
+function hideButton() {
+  document.querySelector("#payment-form-submit").classList.add("collapse");
+}
+
+function displayButton() {
+  document.querySelector("#payment-form-submit").classList.remove("collapse");
+}

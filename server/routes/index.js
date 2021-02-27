@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-
 const stripe = require("stripe")("sk_test_xxx");
 
 /* GET home page. */
@@ -8,10 +7,8 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-
-//第1引数 : ドメイン以下のURIパス。クライアントからこのパスを指定されることでリクエストの処理対象。
-//第2引数 : コールバック関数。リクエストがあった際の処理を記述。
 router.post("/v1/order/payment", async function(req, res, next){
+
   const { paymentMethodId, paymentIntentId, items, currency, useStripeSdk } = req.body;
 
   let total = 0;
@@ -44,35 +41,34 @@ router.post("/v1/order/payment", async function(req, res, next){
 
   switch (intent.status) {
     case "requires_action":
-      response.paymentIntentStatus = "requires_action";
-      break;
+        response.paymentIntentStatus = "requires_action";
+        break;
     case "requires_source_action":
-      response.paymentIntentStatus = "requires_source_action";
-      response.requiresAction = true;
-      response.clientSecret = intent.client_secret;
-      break;
+        response.paymentIntentStatus = "requires_source_action";
+        response.requiresAction = true;
+        response.clientSecret = intent.client_secret;
+        break;
     case "requires_payment_method":
-      response.paymentIntentStatus = "requires_payment_method";
-      break;
+        response.paymentIntentStatus = "requires_payment_method";
+        break;
     case "requires_source":
-      response.paymentIntentStatus = "requires_source";
-      response.error = {
-        messages : ["カードが拒否されました。別の決済手段をお試しください"]
-      }
-      break;
-    case "succeeded":
-      response.paymentIntentStatus = "succeeded";
-      response.clientSecret = intent.client_secret;
-      break;
-      default:
+        response.paymentIntentStatus = "requires_source";
         response.error = {
-          messages : ["システムエラーが発生しました"]
+            messages : ["カードが拒否されました。別の決済手段をお試しください"]
         }
-      break;
+        break;
+    case "succeeded":
+        response.paymentIntentStatus = "succeeded";
+        response.clientSecret = intent.client_secret;
+        break;
+    default:
+        response.error = {
+            messages : ["システムエラーが発生しました"]
+        }
+        break;
   }
 
   res.send(response);
-
 });
 
 module.exports = router;

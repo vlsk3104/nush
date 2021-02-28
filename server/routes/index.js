@@ -15,7 +15,8 @@ router.post("/v1/order/payment", async function(req, res, next){
   const { paymentMethodId, paymentIntentId, items, currency, useStripeSdk } = req.body;
 
   const total = calculateAmount(req.body.items);
-
+  
+ try { 
   let intent;
   if (paymentMethodId) {
     const request = {
@@ -42,6 +43,13 @@ router.post("/v1/order/payment", async function(req, res, next){
   logger.info("ルータメソッドの処理を終了します. レスポンス :", response);
 
   res.send(response);
+ } catch (e) {
+   logger.error("ルーターメソッドの処理中にエラーが発生しました :",e);
+   const response = generateErrorResponse(e.message);
+
+   res.status(500);
+   res.send(response);
+ }
 });
 
 function calculateAmount(items) {
@@ -89,6 +97,14 @@ function generateResponse(paymentIntent) {
       break;
   }
   return response;
+}
+
+function generateErrorResponse (error) {
+  return {
+    error : {
+      messages : [error]
+    }
+  }
 }
 
 module.exports = router;

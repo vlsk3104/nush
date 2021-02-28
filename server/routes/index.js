@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const stripe = require("stripe")("sk_test_xxx");
+const env = require("dotenv").config({path: "./.env"});
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const logger = require("../logger");
 
 /* GET home page. */

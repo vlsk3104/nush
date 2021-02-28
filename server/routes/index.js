@@ -11,11 +11,7 @@ router.post("/v1/order/payment", async function(req, res, next){
 
   const { paymentMethodId, paymentIntentId, items, currency, useStripeSdk } = req.body;
 
-  let total = 0;
-  for (let i = 0; i < items.length; i++) {
-    const current = items[i].amount * items[i].quantity;
-    total += current;
-  }
+  const total = calculateAmount(req.body.items);
 
   let intent;
   if (paymentMethodId) {
@@ -70,5 +66,14 @@ router.post("/v1/order/payment", async function(req, res, next){
 
   res.send(response);
 });
+
+function calculateAmount(items) {
+  let total = 0;
+  for (let i = 0; i < items.length; i++) {
+    const current = items[i].amount * items[i].quantity;
+    total += current;
+  }
+  return total;
+}
 
 module.exports = router;
